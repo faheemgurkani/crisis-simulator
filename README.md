@@ -85,7 +85,7 @@ You can still run completely in **mock** mode for deterministic testing.
 
 * **Reasoning (`reasoning/*`)**
 
-  * Planner wrapper with **ReAct / Plan-and-Execute / Reflexion** modes.
+  * Planner wrapper with **ReAct / Plan-and-Execute / Reflexion / ToT / CoT** modes.
   * Prompt scaffolding: **explicit system prompt**, legal **ACTION\_SCHEMA**,
     **FINAL\_JSON** convention, and short few-shot examples.
   * Token/verbosity control: limit thinking steps (≤3) and K-nearest context.

@@ -1,8 +1,22 @@
+# Core simulation framework
 mesa==2.1.5
-numpy>=1.23
-pandas>=1.5
+
+# Data processing and analysis
+numpy>=1.23.0
+pandas>=1.5.0
+
+# Configuration and data formats
 pyyaml>=6.0
-matplotlib>=3.7
-tqdm>=4.66
+
+# Visualization and plotting
+matplotlib>=3.7.0
+
+# Progress bars and utilities
+tqdm>=4.66.0
+
+# JSON schema validation
+jsonschema>=4.0.0
+
+# LLM API clients
 groq>=0.9.0
 google-generativeai>=0.7.2
