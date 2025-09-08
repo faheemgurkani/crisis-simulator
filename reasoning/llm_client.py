@@ -2,11 +2,21 @@
 import os
 import time
 from typing import List, Dict, Any, Union
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # provider is chosen via environment variable
 PROVIDER = os.getenv("LLM_PROVIDER", "mock").lower()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+
+# Debug info (uncomment for debugging)
+# print(f"LLM Provider: {PROVIDER}")
+# print(f"Groq API Key loaded: {'Yes' if GROQ_API_KEY else 'No'}")
+# if GROQ_API_KEY:
+#     print(f"Groq API Key (first 10 chars): {GROQ_API_KEY[:10]}...")
 
 
 class LLMError(Exception):
@@ -47,9 +57,9 @@ def _call_gemini(messages: List[Dict[str, str]], model: str, temperature: float)
 
 
 def _call_mock(messages: List[Dict[str, str]], *_args, **_kwargs):
-    # Always return a safe dummy
+    # Return a more intelligent mock response that actually tries to help
     return {
-        "content": "FINAL_JSON: {\"commands\":[]}",
+        "content": "Thought: I need to send medics to rescue survivors. Let me move medic 2 towards the nearest survivor.\nFINAL_JSON: {\"commands\":[{\"agent_id\":\"2\",\"type\":\"move\",\"to\":[3,0]}]}",
         "raw": {"mock": True, "messages": messages}
     }
 

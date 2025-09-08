@@ -13,3 +13,17 @@ def build_messages(context_json, scratchpad=None):
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_msg},
     ]
+
+
+def cot_plan(context_json, scratchpad=None):
+    """
+    Chain-of-Thought planning strategy: Step-by-step reasoning.
+    
+    Args:
+        context_json: Current world state from sensors
+        scratchpad: Optional running memory/log
+    
+    Returns:
+        List of messages for LLM call
+    """
+    return build_messages(context_json, scratchpad)

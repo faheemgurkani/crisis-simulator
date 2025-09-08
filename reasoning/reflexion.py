@@ -16,3 +16,17 @@ def build_messages(context_json, scratchpad=None):
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_msg},
     ]
+
+
+def reflexion_plan(context_json, scratchpad=None):
+    """
+    Reflexion planning strategy: Self-reflection and error correction.
+    
+    Args:
+        context_json: Current world state from sensors
+        scratchpad: Running memory/log of past errors and corrections
+    
+    Returns:
+        List of messages for LLM call
+    """
+    return build_messages(context_json, scratchpad)

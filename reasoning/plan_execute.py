@@ -18,3 +18,17 @@ def build_messages(context_json, scratchpad=None):
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_msg + "\n\nOutput PLAN then FINAL_JSON."},
     ]
+
+
+def plan_execute_plan(context_json, scratchpad=None):
+    """
+    Plan-and-Execute strategy: High-level planning then execution.
+    
+    Args:
+        context_json: Current world state from sensors
+        scratchpad: Optional running memory/log
+    
+    Returns:
+        List of messages for LLM call
+    """
+    return build_messages(context_json, scratchpad)

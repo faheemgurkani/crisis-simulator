@@ -30,3 +30,17 @@ def build_messages(context_json, scratchpad=None):
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_msg + example},
     ]
+
+
+def react_plan(context_json, scratchpad=None):
+    """
+    ReAct planning strategy: Reasoning + Acting in iterative steps.
+    
+    Args:
+        context_json: Current world state from sensors
+        scratchpad: Optional running memory/log (unused in basic ReAct)
+    
+    Returns:
+        List of messages for LLM call
+    """
+    return build_messages(context_json, scratchpad)

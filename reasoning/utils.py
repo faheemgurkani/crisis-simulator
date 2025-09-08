@@ -102,3 +102,43 @@ def get_validated_actions(messages, model=None, temperature=0.2, logger=None) ->
             if logger:
                 logger.error(f"Invalid JSON attempt 2: {e2} — defaulting to empty commands.")
             return {"commands": []}
+
+
+def get_validated_actions_with_logging(messages, model=None, temperature=0.2, logger=None):
+    """
+    Call LLM and enforce JSON validity. Retry once with stricter instructions.
+    Returns both actions and response text for logging.
+
+    Returns:
+        tuple: (actions_dict, response_text)
+    """
+    # ---- First Attempt ----
+    resp = call_llm(messages, model=model, temperature=temperature)
+    text = resp["content"]
+
+    try:
+        actions = validate_action_json(text)
+        return actions, text
+    except ValueError as e1:
+        if logger:
+            logger.warning(f"Invalid JSON attempt 1: {e1}")
+        # ---- Re-prompt ----
+        retry_messages = messages + [
+            {
+                "role": "system",
+                "content": (
+                    "Your previous output was invalid JSON / schema mismatch. "
+                    "Produce ONLY the final JSON matching schema and nothing else."
+                ),
+            }
+        ]
+        resp2 = call_llm(retry_messages, model=model, temperature=temperature)
+        text2 = resp2["content"]
+
+        try:
+            actions = validate_action_json(text2)
+            return actions, text2
+        except ValueError as e2:
+            if logger:
+                logger.error(f"Invalid JSON attempt 2: {e2} — defaulting to empty commands.")
+            return {"commands": []}, text2

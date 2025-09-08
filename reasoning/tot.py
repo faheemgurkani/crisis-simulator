@@ -13,3 +13,17 @@ def build_messages(context_json, scratchpad=None):
         {"role": "system", "content": SYSTEM_PROMPT},
         {"role": "user", "content": user_msg + "\n\nExplore branches, then decide."},
     ]
+
+
+def tot_plan(context_json, scratchpad=None):
+    """
+    Tree-of-Thought planning strategy: Multiple reasoning paths.
+    
+    Args:
+        context_json: Current world state from sensors
+        scratchpad: Optional running memory/log
+    
+    Returns:
+        List of messages for LLM call
+    """
+    return build_messages(context_json, scratchpad)

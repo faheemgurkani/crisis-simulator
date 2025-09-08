@@ -1,8 +1,8 @@
 import argparse, os, json, yaml
 from pathlib import Path
 from env.world import CrisisModel
-from reasoning.planner import make_plan
-from eval.logger import log_metrics_snapshot   # 🔹 NEW IMPORT
+from reasoning.planner import make_plan, make_plan_with_logging
+from eval.logger import log_metrics_snapshot, log_prompt_response   # 🔹 NEW IMPORT
 
 
 def load_config(path):
@@ -32,9 +32,12 @@ def run_episode(map_path, seed=42, ticks=200, provider="mock", strategy="react_r
     transcript = []
     for t in range(ticks):
         state = model.summarize_state()
-        plan = make_plan(state, strategy=strategy, scratchpad="\n".join(transcript[-10:]))
+        plan, messages, response_text = make_plan_with_logging(state, strategy=strategy, scratchpad="\n".join(transcript[-10:]))
         cmds = plan.get("commands", [])
         model.set_plan(cmds)
+
+        # Log conversation for this tick
+        log_prompt_response(strategy, run_id, t, messages, response_text)
 
         logf.write(f"=== t={t} ===\n")
         logf.write(json.dumps({"context": state, "plan": plan})[:2000] + "\n")

@@ -3,6 +3,9 @@ import argparse, os, csv, random
 import numpy as np
 from pathlib import Path
 from tqdm import trange
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from eval.logger import save_run_metrics
 from main import run_episode  # assuming run_episode returns dict of metrics
 
