@@ -153,7 +153,7 @@ def build_state(model):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--map", type=str, default="configs/map_small.yaml")
-    ap.add_argument("--provider", type=str, default="mock", choices=["mock","groq","gemini"])
+    ap.add_argument("--provider", type=str, default="mock", choices=["mock","groq","gemini","ollama"])
     ap.add_argument("--strategy", type=str, default="react_reflexion")
     ap.add_argument("--seed", type=int, default=42)
     ap.add_argument("--ticks", type=int, default=200)

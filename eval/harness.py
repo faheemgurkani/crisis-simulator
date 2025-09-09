@@ -16,7 +16,11 @@ def main():
     ap.add_argument("--strategies", nargs="+", required=True)
     ap.add_argument("--seeds", nargs="+", type=int, default=[0,1,2,3,4])
     ap.add_argument("--ticks", type=int, default=200)
+    ap.add_argument("--provider", type=str, default="mock", choices=["mock","groq","gemini","ollama"])
     args = ap.parse_args()
+    
+    # Set the LLM provider environment variable
+    os.environ["LLM_PROVIDER"] = args.provider
 
     os.makedirs("results/raw", exist_ok=True)
     os.makedirs("results/agg", exist_ok=True)

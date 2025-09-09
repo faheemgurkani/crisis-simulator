@@ -11,6 +11,8 @@ load_dotenv()
 PROVIDER = os.getenv("LLM_PROVIDER", "mock").lower()
 GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
+OLLAMA_BASE_URL = os.getenv("OLLAMA_BASE_URL", "http://localhost:11434")
+OLLAMA_MODEL = os.getenv("OLLAMA_MODEL", "gemma3n:e4b")
 
 # Debug info (uncomment for debugging)
 # print(f"LLM Provider: {PROVIDER}")
@@ -45,7 +47,7 @@ def _call_gemini(messages: List[Dict[str, str]], model: str, temperature: float)
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
         mdl = genai.GenerativeModel(model or "gemini-1.5-flash")
-        # flatten messages into a single string (Gemini doesn’t support roles the same way)
+        # flatten messages into a single string (Gemini doesn't support roles the same way)
         prompt = "\n".join([f"{m['role'].upper()}: {m['content']}" for m in messages])
         resp = mdl.generate_content(prompt, generation_config={"temperature": temperature})
         return {
@@ -54,6 +56,49 @@ def _call_gemini(messages: List[Dict[str, str]], model: str, temperature: float)
         }
     except Exception as e:
         raise LLMError(f"Gemini call failed: {e}")
+
+
+def _call_ollama(messages: List[Dict[str, str]], model: str, temperature: float):
+    try:
+        import requests
+        import json
+        
+        # Use the model from environment or parameter
+        model_name = model or OLLAMA_MODEL
+        
+        # Prepare the request payload
+        payload = {
+            "model": model_name,
+            "messages": messages,
+            "stream": False,
+            "options": {
+                "temperature": temperature,
+                "top_p": 0.9,
+                "top_k": 40
+            }
+        }
+        
+        # Make the API call to Ollama
+        response = requests.post(
+            f"{OLLAMA_BASE_URL}/api/chat",
+            json=payload,
+            timeout=60
+        )
+        
+        if response.status_code != 200:
+            raise Exception(f"Ollama API returned status {response.status_code}: {response.text}")
+        
+        result = response.json()
+        
+        if "message" not in result or "content" not in result["message"]:
+            raise Exception(f"Unexpected Ollama response format: {result}")
+        
+        return {
+            "content": result["message"]["content"],
+            "raw": result
+        }
+    except Exception as e:
+        raise LLMError(f"Ollama call failed: {e}")
 
 
 def _call_mock(messages: List[Dict[str, str]], *_args, **_kwargs):
@@ -370,6 +415,8 @@ def call_llm(
                 return _call_groq(messages, model, temperature)
             elif PROVIDER == "gemini":
                 return _call_gemini(messages, model, temperature)
+            elif PROVIDER == "ollama":
+                return _call_ollama(messages, model, temperature)
             else:
                 return _call_mock(messages, model, temperature)
         except LLMError as e:
